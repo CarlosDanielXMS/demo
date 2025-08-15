@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{base}">
+
+<head>
+    <title>Clientes</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="module-header">
+            <h2>Clientes</h2>
+            <button class="btn btn-primary" id="add-cliente-btn" type="button">
+                <span class="material-icons">add</span> Novo Cliente
+            </button>
+        </div>
+
+        <div class="module-controls">
+            <input type="text" id="search-cliente" placeholder="Buscar cliente por nome ou email...">
+            <select id="filter-cliente-status">
+                <option value="all">Todos</option>
+                <option value="1">Ativos</option>
+                <option value="2">Inativos</option>
+            </select>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>E-mail</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="c : ${clientes}">
+                    <td th:text="${c.nome}">-</td>
+                    <td th:text="${c.telefone}">-</td>
+                    <td th:text="${c.email}">-</td>
+                    <td class="actions">
+                        <button class="btn-icon-only edit-cliente-btn" th:attr="data-id=${c.id}" title="Editar">
+                            <span class="material-icons">edit</span>
+                        </button>
+
+                        <button class="btn-icon-only delete-cliente-btn" th:attr="data-id=${c.id}" title="Excluir">
+                            <span class="material-icons cancel">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="cliente-modal" class="modal" th:object="${novoCliente}">
+            <div class="modal-content">
+                <h3 id="modal-title" th:text="${novoCliente.id} != null ? 'Editar Cliente' : 'Cadastrar Cliente'">
+                    Cadastrar Cliente
+                </h3>
+                <form id="cliente-form" th:object="${novoCliente}">
+
+                    <input type="hidden" th:if="${novoCliente.id != null}" name="_method" value="put" />
+
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input id="nome" class="form-control" type="text" th:field="*{nome}" placeholder="Nome"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input id="telefone" class="form-control" type="text" th:field="*{telefone}"
+                            placeholder="Telefone" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input id="email" class="form-control" type="email" th:field="*{email}" placeholder="Email" />
+                    </div>
+
+                    <div class="form-group" th:if="${novoCliente.id} == null">
+                        <label for="senha">Senha</label>
+                        <input id="senha" class="form-control" type="password" th:field="*{senha}" placeholder="Senha"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" class="form-control" th:field="*{status}">
+                            <option value="1">Ativo</option>
+                            <option value="2">Inativo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cliente-cancel">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- JSON injected pelo PageController -->
+        <script type="application/json" id="clientes-data" th:utext="${clientesJson}">[]</script>
+        <script th:src="@{/js/crud.js}" defer></script>
+    </section>
+</body>
+
+</html>

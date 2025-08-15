@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{base}">
+<div class="module-controls">
+    <input type="text" id="search-profissional" placeholder="Buscar profissional por nome ou telefone...">
+    <select id="filter-profissional-status">
+        <option value="all">Todos</option>
+        <option value="1">Ativos</option>
+        <option value="2">Inativos</option>
+    </select>
+</div>
+
+<head>
+    <title>Profissionais</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="module-header">
+            <h2>Profissionais</h2>
+            <button class="btn btn-primary" id="add-profissional-btn" type="button">
+                <span class="material-icons">add</span> Novo Profissional
+            </button>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>E-mail</th>
+                    <th>Salário Fixo</th>
+                    <th>Comissão</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${profissionais}">
+                    <td th:text="${p.nome}">-</td>
+                    <td th:text="${p.telefone}">-</td>
+                    <td th:text="${p.email}">-</td>
+                    <td th:text="${#numbers.formatDecimal(p.salarioFixo, 2, 2)}">-</td>
+                    <td th:text="${#numbers.formatDecimal(p.comissao,   2, 2)}">-</td>
+                    <td class="actions">
+                        <button class="btn-icon-only edit-profissional-btn" th:attr="data-id=${p.id}" title="Editar">
+                            <span class="material-icons">edit</span>
+                        </button>
+                        <button class="btn-icon-only delete-profissional-btn" th:attr="data-id=${p.id}"
+                            title="Inativar">
+                            <span class="material-icons cancel">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="profissional-modal" class="modal" th:object="${novoProfissional}">
+            <div class="modal-content">
+                <h3 id="modal-title"
+                    th:text="${novoProfissional.id} != null ? 'Editar Profissional' : 'Cadastrar Profissional'">
+                    Cadastrar Profissional
+                </h3>
+
+                <form id="profissional-form" th:object="${novoProfissional}">
+
+                    <input type="hidden" th:if="${novoProfissional.id != null}" name="_method" value="put" />
+
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input id="nome" class="form-control" type="text" th:field="*{nome}" placeholder="Nome"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input id="telefone" class="form-control" type="text" th:field="*{telefone}"
+                            placeholder="Telefone" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input id="email" class="form-control" type="email" th:field="*{email}" placeholder="Email" />
+                    </div>
+
+                    <div class="form-group" th:if="${novoProfissional.id} == null">
+                        <label for="senha">Senha</label>
+                        <input id="senha" class="form-control" type="password" th:field="*{senha}" placeholder="Senha"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salarioFixo">Salário Fixo</label>
+                        <input id="salarioFixo" class="form-control" type="number" step="0.01" th:field="*{salarioFixo}"
+                            placeholder="0.00" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comissao">Comissão</label>
+                        <input id="comissao" class="form-control" type="number" step="0.01" th:field="*{comissao}"
+                            placeholder="0.00" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" class="form-control" th:field="*{status}">
+                            <option value="1">Ativo</option>
+                            <option value="2">Inativo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="profissional-cancel">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="application/json" id="profissionais-data" th:utext="${profissionaisJson}">[]</script>
+        <script th:src="@{/js/crud.js}" defer></script>
+    </section>
+</body>
+
+</html>

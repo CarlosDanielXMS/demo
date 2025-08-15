@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{base}">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Agendamentos</title>
+</head>
+
+<body>
+  <div layout:fragment="content">
+
+    <div class="module-header">
+      <h2>Agendamentos</h2>
+      <button class="btn btn-primary" id="add-agenda-btn">
+        <span class="material-icons">add</span> Novo Agendamento
+      </button>
+    </div>
+
+    <div class="calendar-toolbar">
+      <div class="date-navigation">
+        <button class="btn-icon-only" id="prev-week-btn"><span class="material-icons">chevron_left</span></button>
+        <button class="btn btn-outline" id="today-btn">Hoje</button>
+        <button class="btn-icon-only" id="next-week-btn"><span class="material-icons">chevron_right</span></button>
+        <span id="current-period-display" class="current-period"></span>
+      </div>
+      <div class="view-switcher">
+        <button class="btn btn-outline active" id="week-view-btn">Semana</button>
+        <button class="btn btn-outline" id="day-view-btn">Dia</button>
+      </div>
+    </div>
+
+    <div class="calendar-grid-container">
+      <div class="time-column"></div>
+      <div class="calendar-main-grid" id="calendar-main-grid"></div>
+    </div>
+
+    <!-- ===== Modal (layout do protótipo) ===== -->
+    <div id="agendamento-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span class="close-button" id="modal-close">&times;</span>
+        <h3 id="modal-title">Agendar Serviço</h3>
+
+        <form id="agendamento-form">
+          <input type="hidden" id="agenda-id" />
+          <input type="hidden" id="agenda-valor-hidden" />
+          <input type="hidden" id="agenda-duracao-hidden" />
+
+          <div class="form-group">
+            <label for="agendamento-cliente">Cliente</label>
+            <select id="agendamento-cliente" required>
+              <option value="">Selecione um cliente</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="agendamento-servico">Serviço</label>
+            <select id="agendamento-servico" required>
+              <option value="">Selecione um serviço</option>
+            </select>
+            <small id="servico-info" class="subtle-text"></small>
+          </div>
+
+          <div class="form-group">
+            <label for="agendamento-profissional">Profissional Disponível</label>
+            <select id="agendamento-profissional" required>
+              <option value="">Selecione um profissional</option>
+            </select>
+          </div>
+
+          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-group">
+              <label for="agendamento-data">Data</label>
+              <input type="date" id="agendamento-data" required />
+            </div>
+            <div class="form-group">
+              <label for="agendamento-hora">Hora</label>
+              <input type="time" id="agendamento-hora" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="agendamento-status">Status</label>
+            <select id="agendamento-status" required>
+              <option value="1">Ativo</option>
+              <option value="2">Inativo</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" id="modal-inativar" style="display:none;">Inativar</button>
+            <button type="button" class="btn btn-outline" id="modal-cancelar">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script type="application/json" id="clientes-data" th:utext="${clientesJson}">[]</script>
+    <script type="application/json" id="servicos-data" th:utext="${servicosJson}">[]</script>
+    <script type="application/json" id="profissionais-data" th:utext="${profissionaisJson}">[]</script>
+    <script th:src="@{/js/agendamentos.js}" defer></script>
+  </div>
+</body>
+
+</html>

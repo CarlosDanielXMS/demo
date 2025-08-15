@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{base}">
+
+<head>
+    <title>Catálogo</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="module-header">
+            <h2>Catálogo</h2>
+            <button class="btn btn-primary" id="add-catalogo-btn" type="button">
+                <span class="material-icons">add</span> Novo Item
+            </button>
+        </div>
+
+        <div class="module-controls">
+            <input type="text" id="search-catalogo" placeholder="Buscar por profissional ou serviço...">
+            <select id="filter-catalogo-status">
+                <option value="all">Todos</option>
+                <option value="1">Ativos</option>
+                <option value="2">Inativos</option>
+            </select>
+        </div>
+
+        <table class="data-table" id="catalogo-table">
+            <thead>
+                <tr>
+                    <th>Profissional</th>
+                    <th>Serviço</th>
+                    <th>Valor</th>
+                    <th>Tempo Médio</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cat : ${catalogo}">
+                    <td th:text="${cat.profissional != null ? cat.profissional.nome : '-'}">-</td>
+                    <td th:text="${cat.servico != null ? cat.servico.descricao : '-'}">-</td>
+                    <td th:text="${cat.valor}">-</td>
+                    <td th:text="${cat.tempoMedio}">-</td>
+                    <td class="actions">
+                        <button class="btn-icon-only edit-catalogo-btn"
+                            th:attr="data-id-prof=${cat.profissional != null ? cat.profissional.id : 0}"
+                            th:attrappend=" data-id-serv=${cat.servico != null ? cat.servico.id : 0}" title="Editar">
+                            <span class="material-icons">edit</span>
+                        </button>
+
+                        <button class="btn-icon-only delete-catalogo-btn"
+                            th:attr="data-id-prof=${cat.profissional != null ? cat.profissional.id : 0}"
+                            th:attrappend=" data-id-serv=${cat.servico != null ? cat.servico.id : 0}" title="Excluir">
+                            <span class="material-icons cancel">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="catalogo-modal" class="modal" th:object="${novoCatalogo}">
+            <div class="modal-content">
+                <h3 id="modal-title" th:text="${novoCatalogo.id} != null ? 'Editar Item' : 'Cadastrar Item'">
+                    Cadastrar Item
+                </h3>
+                <form id="catalogo-form" th:object="${novoCatalogo}">
+
+                    <input type="hidden" th:if="${novoCatalogo.id != null}" name="_method" value="put" />
+
+                    <input type="hidden" name="status" value="1" />
+
+                    <div class="form-group">
+                        <label for="profissional">Profissional</label>
+                        <select id="profissional" class="form-control" th:field="*{profissional.id}">
+                            <option th:each="prof : ${profissionais}" th:value="${prof.id}" th:text="${prof.nome}">
+                                Profissional</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="servico">Serviço</label>
+                        <select id="servico" class="form-control" th:field="*{servico.id}">
+                            <option th:each="serv : ${servicos}" th:value="${serv.id}" th:text="${serv.descricao}">
+                                Serviço</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valor">Valor</label>
+                        <input id="valor" class="form-control" type="number" step="0.01" th:field="*{valor}"
+                            placeholder="Valor" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tempoMedio">Tempo Médio</label>
+                        <input id="tempoMedio" class="form-control" type="number" th:field="*{tempoMedio}"
+                            placeholder="Tempo Médio (min)" required />
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="catalogo-cancel">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="application/json" id="catalogo-data" th:utext="${catalogoJson}">[]</script>
+        <script th:src="@{/js/crud.js}" defer></script>
+    </section>
+</body>
+
+</html>

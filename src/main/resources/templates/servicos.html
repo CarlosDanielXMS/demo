@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" layout:decorate="~{base}">
+<div class="module-controls">
+    <input type="text" id="search-servico" placeholder="Buscar serviço por descrição...">
+    <select id="filter-servico-status">
+        <option value="all">Todos</option>
+        <option value="1">Ativos</option>
+        <option value="2">Inativos</option>
+    </select>
+</div>
+
+<head>
+    <title>Serviços</title>
+</head>
+
+<body>
+    <section layout:fragment="content">
+        <div class="module-header">
+            <h2>Serviços</h2>
+            <button class="btn btn-primary" id="add-servico-btn" type="button">
+                <span class="material-icons">add</span> Novo Serviço
+            </button>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                    <th>Tempo Médio</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="s : ${servicos}">
+                    <td th:text="${s.descricao}">-</td>
+                    <td th:text="${#numbers.formatDecimal(s.valor, 2, 2)}">-</td>
+                    <td th:text="${s.tempoMedio}">-</td>
+                    <td class="actions">
+                        <button class="btn-icon-only edit-servico-btn" th:attr="data-id=${s.id}" title="Editar">
+                            <span class="material-icons">edit</span>
+                        </button>
+                        <button class="btn-icon-only delete-servico-btn" th:attr="data-id=${s.id}" title="Inativar">
+                            <span class="material-icons cancel">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="servico-modal" class="modal" th:object="${novoServico}">
+            <div class="modal-content">
+                <h3 id="modal-title" th:text="${novoServico.id} != null ? 'Editar Serviço' : 'Cadastrar Serviço'">
+                    Cadastrar Serviço
+                </h3>
+                <form id="servico-form" th:object="${novoServico}">
+
+                    <input type="hidden" th:if="${novoServico.id != null}" name="_method" value="put" />
+
+                    <div class="form-group">
+                        <label for="descricao">Descrição</label>
+                        <input id="descricao" class="form-control" type="text" th:field="*{descricao}"
+                            placeholder="Descrição" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valor">Valor</label>
+                        <input id="valor" class="form-control" type="number" step="0.01" th:field="*{valor}"
+                            placeholder="Valor" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tempoMedio">Tempo Médio (min)</label>
+                        <input id="tempoMedio" class="form-control" type="number" th:field="*{tempoMedio}"
+                            placeholder="Tempo Médio" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" class="form-control" th:field="*{status}">
+                            <option value="1">Ativo</option>
+                            <option value="2">Inativo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="servico-cancel">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="application/json" id="servicos-data" th:utext="${servicosJson}">[]</script>
+        <script th:src="@{/js/crud.js}" defer></script>
+    </section>
+</body>
+
+</html>
