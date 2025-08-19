@@ -36,7 +36,6 @@
       <div class="calendar-main-grid" id="calendar-main-grid"></div>
     </div>
 
-    <!-- Modal do formulário (idem anterior, sem mudanças estruturais) -->
     <div id="agendamento-modal" class="modal" style="display:none;">
       <div class="modal-content">
         <span class="close-button" id="modal-close">&times;</span>
@@ -47,7 +46,6 @@
           <input type="hidden" id="agenda-valor-hidden" />
           <input type="hidden" id="agenda-duracao-hidden" />
 
-          <!-- Dados do agendamento -->
           <div class="form-section">
             <div class="section-header">
               <div class="section-title">
@@ -92,7 +90,6 @@
             </div>
           </div>
 
-          <!-- Serviços Agendados -->
           <div class="form-section">
             <div class="section-header">
               <div class="section-title">
@@ -112,13 +109,12 @@
             <div id="sa-empty" class="empty-state">
               <span class="material-icons">inbox</span>
               <div>
-                <strong>Nenhum serviço adicionado.</strong><br/>
+                <strong>Nenhum serviço adicionado.</strong><br />
                 Clique em <em>Adicionar serviço</em> para começar.
               </div>
             </div>
           </div>
 
-          <!-- Resumo -->
           <div class="form-section">
             <div class="section-header">
               <div class="section-title">
@@ -139,7 +135,6 @@
             </div>
           </div>
 
-          <!-- Ações -->
           <div class="form-actions form-actions-sticky">
             <button type="button" class="btn btn-outline" id="modal-inativar" style="display:none;">Inativar</button>
             <button type="button" class="btn btn-outline" id="modal-cancelar">Cancelar</button>
@@ -149,7 +144,6 @@
       </div>
     </div>
 
-    <!-- dados para preencher selects -->
     <script type="application/json" id="clientes-data" th:utext="${clientesJson}">[]</script>
     <script type="application/json" id="servicos-data" th:utext="${servicosJson}">[]</script>
     <script type="application/json" id="profissionais-data" th:utext="${profissionaisJson}">[]</script>
@@ -162,4 +156,5 @@
   </th:block>
 
 </body>
+
 </html>

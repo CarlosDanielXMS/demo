@@ -2,12 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const { Api, Dom, Modal, Modules } = window.App;
   const { ServicosAgendados } = Modules;
 
-  // ===== Dados injetados pelo HTML =====
   const CLIENTES      = Dom.readJsonScript("clientes-data");
   const SERVICOS      = Dom.readJsonScript("servicos-data");
   const PROFISSIONAIS = Dom.readJsonScript("profissionais-data");
 
-  // ===== Referências de UI =====
   const calendarGrid = Dom.qs("#calendar-main-grid");
   const timeColumn   = Dom.qs(".time-column");
   const periodLabel  = Dom.qs("#current-period-display");
@@ -40,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const saList = Dom.qs("#sa-list");
   const saAdd  = Dom.qs("#sa-add");
 
-  // ===== Constantes/estado =====
   const START_HOUR = 7;       // 07:00
   const END_HOUR   = 18;      // 18:00
   const SLOT_MIN   = 30;      // tamanho do slot
@@ -52,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let DAY_OVERLAYS = [];      // colunas absolutas para os cards
 
-  // ===== Utils =====
   const pad2 = (n)=> String(n).padStart(2,"0");
   const minutesFromStartOfDay = (d)=> d.getHours()*60 + d.getMinutes();
   const isSameDay = (a,b)=> a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
@@ -70,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function startOfWeek(date){ const d=new Date(date), wd=d.getDay(), diff=(wd===0?-6:1-wd); d.setDate(d.getDate()+diff); d.setHours(0,0,0,0); return d; }
   function formatPeriodWeek(start){ const end=new Date(start); end.setDate(start.getDate()+6); const s=start.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}); const e=end.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}); return `${s} – ${e} de ${end.getFullYear()}`; }
 
-  // ===== Select Cliente =====
   function fillClientes() {
     selCliente.innerHTML = `<option value="">Selecione um cliente</option>`;
     (CLIENTES || []).forEach(c => {
@@ -82,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   fillClientes();
 
-  // ===== Lista de Serviços Agendados =====
   function getSaRows(){ return Array.from(saList.querySelectorAll(".sa-row")); }
 
   function recalcTotals(){
@@ -109,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
     recalcTotals();
   }
 
-  // ===== Modal =====
   Modal.bindBasic(modal, "#modal-cancelar");
   function showModal(open){ modal.style.display = open ? "flex" : "none"; }
   function closeModal(){ showModal(false); }
@@ -193,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== Persistência (Agenda -> Itens) =====
   async function salvarAgendaEItens() {
     const id        = Number(fieldId.value || 0);
     const clienteId = Number(selCliente.value || 0);
@@ -267,7 +259,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== Toolbar: estado visual Dia/Semana =====
   function setActiveViewButtons(){
     if (currentView === "day") {
       btnDay.classList.add("active");
@@ -287,7 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
   Dom.on(btnToday, "click", () => { currentDate = new Date(); render(); });
   Dom.on(btnAdd  , "click", () => openCreateModal(currentDate) );
 
-  // ===== Coluna de horários =====
   function renderTimeColumn(){
     timeColumn.innerHTML = "";
     const totalSlots=(END_HOUR-START_HOUR)*(60/SLOT_MIN);
@@ -300,7 +290,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ===== Grade + Overlay (1ª linha clicável e clique sem -30) =====
   function buildGridHeaderAndCells(cols, headers){
     calendarGrid.innerHTML = "";
     calendarGrid.style.position = "relative";
@@ -383,7 +372,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return Array.from({length:7},(_,i)=>{const d=new Date(start); d.setDate(start.getDate()+i); return d;});
   }
 
-  // ===== Layout de colisões =====
   function layoutOverlaps(dayEvents) {
     dayEvents.sort((a,b)=> (a.startMin - b.startMin) || (a.endMin - b.endMin));
     let active = [], clusterId = -1, clusterMaxCols = {}, result = [];
@@ -474,7 +462,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ===== Render principal =====
   function renderInternal(){
     renderTimeColumn();
     if (currentView==="week"){
@@ -491,11 +478,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Alias claro para re-render (usado pelos botões)
   function render(){ setActiveViewButtons(); renderInternal(); }
 
   async function refreshAndRender(){ AGENDAS = await Api.Agendamentos.list(); render(); }
 
-  // boot
   (async function init(){ await refreshAndRender(); })();
 });

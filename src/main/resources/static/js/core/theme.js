@@ -1,50 +1,125 @@
-(function () {
+(function (global) {
+  global.App = global.App || {};
+  const Dom = (global.App && global.App.Dom) || {};
+  const qs  = Dom.qs  || ((sel, root = document) => root.querySelector(sel));
+  const qsa = Dom.qsa || ((sel, root = document) => Array.from(root.querySelectorAll(sel)));
+  const on  = Dom.on  || ((el, evt, cb) => el && el.addEventListener(evt, cb));
+
   const root = document.documentElement;
   const THEME_KEY = 'theme';
+  const DARK_CLASS = 'theme-dark';
 
-  function apply(mode) {
-    if (mode === 'dark') {
-      root.classList.add('theme-dark');
-    } else {
-      root.classList.remove('theme-dark');
-    }
+  const subscribers = [];
+
+  function prefersDark() {
+    return !!(global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function getStored() {
+    try { return localStorage.getItem(THEME_KEY); } catch { return null; }
+  }
+  function setStored(mode) {
+    try { localStorage.setItem(THEME_KEY, mode); } catch {}
+  }
+  function get() {
+    return root.classList.contains(DARK_CLASS) ? 'dark' : 'light';
+  }
+  function dispatch(mode) {
     try {
-      localStorage.setItem(THEME_KEY, mode);
-    } catch (e) { /* ignore */ }
+      document.dispatchEvent(new CustomEvent('app:themechange', { detail: { mode } }));
+    } catch {}
+    subscribers.forEach(fn => { try { fn(mode); } catch {} });
+  }
 
-    // Ajusta ícone do botão, se existir
-    const btn = document.getElementById('themeToggle');
-    if (btn) {
-      const icon = btn.querySelector('.material-icons');
-      if (icon) icon.textContent = (mode === 'dark') ? 'light_mode' : 'dark_mode';
+  function updateToggleVisuals(mode) {
+    const btns = qsa('#themeToggle, [data-theme-toggle]');
+    btns.forEach(btn => {
+      const icon = qs('.material-icons, [data-icon]', btn);
+      if (icon) {
+        if (icon.classList && icon.classList.contains('material-icons')) {
+          icon.textContent = (mode === 'dark') ? 'light_mode' : 'dark_mode';
+        } else {
+          icon.setAttribute('data-icon', (mode === 'dark') ? 'light_mode' : 'dark_mode');
+        }
+      }
+      const label = qs('[data-theme-label]', btn);
+      if (label) label.textContent = (mode === 'dark') ? 'Tema claro' : 'Tema escuro';
+    });
+  }
+
+  function apply(mode, { persist = true, emit = true } = {}) {
+    if (mode === 'system') mode = prefersDark() ? 'dark' : 'light';
+
+    if (mode === 'dark') root.classList.add(DARK_CLASS);
+    else root.classList.remove(DARK_CLASS);
+
+    if (persist && (mode === 'dark' || mode === 'light')) setStored(mode);
+
+    updateToggleVisuals(mode);
+    if (emit) dispatch(mode);
+    return mode;
+  }
+
+  function toggle() {
+    return apply(get() === 'dark' ? 'light' : 'dark');
+  }
+
+  (function initialApply() {
+    const stored = getStored();
+    const fromClass = root.classList.contains(DARK_CLASS);
+    const initial =
+      (stored === 'dark' || stored === 'light') ? stored :
+      (fromClass ? 'dark' : (prefersDark() ? 'dark' : 'light'));
+    apply(initial, { persist: !!stored, emit: false });
+  })();
+
+  function bindToggles() {
+    const btns = qsa('#themeToggle, [data-theme-toggle]');
+    btns.forEach(btn => on(btn, 'click', (e) => { e.preventDefault(); toggle(); }));
+    updateToggleVisuals(get());
+  }
+
+  function bindSystemChangeIfNeeded() {
+    const stored = getStored();
+    if (!stored && global.matchMedia) {
+      const mq = global.matchMedia('(prefers-color-scheme: dark)');
+      const handler = (e) => apply(e.matches ? 'dark' : 'light', { persist: false });
+      if (mq.addEventListener) mq.addEventListener('change', handler);
+      else if (mq.addListener) mq.addListener(handler);
     }
   }
 
-  // Estado inicial: respeita classe já aplicada pelo inline + atualiza ícone
-  document.addEventListener('DOMContentLoaded', function () {
-    const isDark = root.classList.contains('theme-dark');
-    apply(isDark ? 'dark' : 'light');
+  function init() {
+    apply(get(), { persist: false, emit: true });
+    bindToggles();
+    bindSystemChangeIfNeeded();
+  }
 
-    // Alternância manual
-    const btn = document.getElementById('themeToggle');
-    if (btn) {
-      btn.addEventListener('click', function () {
-        const newMode = root.classList.contains('theme-dark') ? 'light' : 'dark';
-        apply(newMode);
-      });
-    }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
-    // Reage a mudança do SO se o usuário não tiver preferência salva
-    if (window.matchMedia) {
-      const mq = window.matchMedia('(prefers-color-scheme: dark)');
-      const stored = (function () {
-        try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; }
-      })();
-      const onChange = function (e) {
-        if (!stored) apply(e.matches ? 'dark' : 'light');
-      };
-      if (mq.addEventListener) mq.addEventListener('change', onChange);
-      else if (mq.addListener) mq.addListener(onChange);
+  global.App.Theme = {
+    init,
+    apply,
+    toggle,
+    get,
+    set: (mode) => {
+      if (!['light','dark','system'].includes(mode)) {
+        throw new Error('App.Theme.set(mode): use "light" | "dark" | "system".');
+      }
+      return apply(mode);
+    },
+    onChange: (cb) => {
+      if (typeof cb === 'function') {
+        subscribers.push(cb);
+        return () => {
+          const i = subscribers.indexOf(cb);
+          if (i >= 0) subscribers.splice(i, 1);
+        };
+      }
+      return () => {};
     }
-  });
-})();
+  };
+})(window);
