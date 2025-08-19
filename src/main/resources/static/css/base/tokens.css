@@ -1,0 +1,74 @@
+:root {
+  /* Brand — Primary */
+  --color-primary-base: #2196F3;
+  --color-primary-dark: #1976D2;
+  --color-primary-light: #BBDEFB;
+
+  /* Brand — Secondary */
+  --color-secondary-base: #4CAF50;
+  --color-secondary-dark: #388E3C;
+
+  /* Neutral scale */
+  --color-neutral-0: #FFFFFF;
+  --color-neutral-50: #F9F9F9;
+  --color-neutral-100: #F0F0F0;
+  --color-neutral-200: #E0E0E0;
+  --color-neutral-300: #BDBDBD;
+  --color-neutral-400: #757575;
+  --color-neutral-500: #212121;
+
+  /* Surfaces & borders */
+  --color-background-default: #F0F2F5;
+  --color-background-alt: #F5F7FA;
+  --color-background-surface: var(--color-neutral-0);
+  --color-background-surface-hover: #f0f8ff;
+  --color-background-hover: var(--color-neutral-100);
+  --color-border-default: var(--color-neutral-200);
+
+  /* Text */
+  --color-text-default: var(--color-neutral-500);
+  --color-text-subtle: var(--color-neutral-400);
+  --color-text-on-primary: var(--color-neutral-0);
+  --color-text-on-secondary: var(--color-neutral-0);
+  --color-text-inverted: var(--color-neutral-0);
+
+  /* Feedback */
+  --color-feedback-success-background: #E8F5E9;
+  --color-feedback-success-base: #4CAF50;
+  --color-feedback-success-text: #2E7D32;
+
+  --color-feedback-warning-background: #FFF3E0;
+  --color-feedback-warning-base: #FF9800;
+  --color-feedback-warning-text: #EF6C00;
+
+  --color-feedback-error-background: #FFEBEE;
+  --color-feedback-error-base: #F44336;
+  --color-feedback-error-text: #C62828;
+
+  /* Shadow */
+  --color-shadow-default: rgba(0, 0, 0, .1);
+
+  /* Layout tokens */
+  --layout-sidebar-width: 250px;
+  --layout-header-height: 64px;
+
+  /* Calendar tokens */
+  --calendar-header-height: 50px;
+  --slot-height: 50px;
+  --time-column-width: 80px;
+
+  /* Border radius & spacing scale */
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-10: 10px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-15: 15px;
+  --space-18: 18px;
+  --space-20: 20px;
+  --space-25: 25px;
+  --space-28: 28px;
+  --space-30: 30px;
+}

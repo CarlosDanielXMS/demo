@@ -1,0 +1,32 @@
+body {
+  font-family: 'Roboto', system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-background-alt);
+  color: var(--color-text-default);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0 0 var(--space-10);
+  font-weight: 600;
+  color: var(--color-text-default);
+}
+
+p {
+  margin: 0 0 var(--space-10);
+  color: var(--color-text-default);
+}
+
+.small,
+small {
+  font-size: .875rem;
+  color: var(--color-text-subtle);
+}
+
+.muted {
+  color: var(--color-text-subtle);
+}

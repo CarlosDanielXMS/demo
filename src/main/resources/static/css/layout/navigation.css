@@ -1,0 +1,97 @@
+.icon-button {
+  cursor: pointer;
+  color: var(--color-text-subtle);
+  transition: color .2s ease;
+  background: transparent;
+  border: none;
+}
+
+.icon-button:hover {
+  color: var(--color-primary-base);
+}
+
+.icon-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
+  border-radius: 8px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px;
+  font-weight: 500;
+  color: var(--color-text-subtle);
+  transition: background-color .2s, color .2s, border-left-color .2s;
+  border-left: 5px solid transparent;
+}
+
+.sidebar-link .material-icons {
+  font-size: 24px;
+}
+
+.sidebar-link:hover,
+.sidebar-link:focus {
+  background: var(--color-background-hover);
+  color: var(--color-primary-base);
+  outline: none;
+}
+
+.sidebar-link.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary-base);
+  border-left-color: var(--color-primary-base);
+  padding-left: 15px;
+}
+
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.module-header h2 {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-primary-base);
+  margin: 0;
+}
+
+.module-controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.module-controls input,
+.module-controls select {
+  padding: 10px 15px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 6px;
+  font-size: 15px;
+  background: var(--color-neutral-0);
+  color: var(--color-text-default);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.module-controls input::placeholder {
+  color: var(--color-text-subtle);
+  opacity: .9;
+}
+
+.module-controls input:focus,
+.module-controls select:focus {
+  border-color: var(--color-primary-base);
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
+  background: var(--color-neutral-0);
+}
+
+.module-controls input {
+  flex-grow: 1;
+  max-width: 400px;
+}
