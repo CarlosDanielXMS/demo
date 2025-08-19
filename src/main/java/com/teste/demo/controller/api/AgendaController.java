@@ -65,6 +65,12 @@ public class AgendaController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/concluir")
+    public ResponseEntity<Void> concluir(@PathVariable Integer id) {
+        service.concluir(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/profissionais-disponiveis")
     public ResponseEntity<List<Profissional>> profissionaisDisponiveis(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,

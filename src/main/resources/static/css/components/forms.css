@@ -71,6 +71,23 @@
   border-bottom: 1px dashed var(--color-border-default);
 }
 
+.form-modern.is-frozen .form-section:first-of-type .section-title::after {
+  content: "Edição desabilitada";
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-feedback-warning-background);
+  color: var(--color-feedback-warning-text);
+  border: 1px solid var(--color-feedback-warning-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+
 .section-title {
   display: flex;
   align-items: center;

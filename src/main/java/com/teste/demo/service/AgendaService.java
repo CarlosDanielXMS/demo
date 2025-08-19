@@ -114,6 +114,14 @@ public class AgendaService {
         recalcularTotais(existente.getId());
     }
 
+    @Transactional
+    public void concluir(Integer id) {
+        Agenda existente = buscarPorId(id);
+
+        existente.setStatus((short) 3);
+        repo.save(existente);
+    }
+
     private Short parseStatus(String s) {
         if (!StringUtils.hasText(s))
             return null;

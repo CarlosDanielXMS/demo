@@ -6,7 +6,7 @@
   };
 
   function getApiBase() {
-    return Dom.meta("api-base") || global.API_BASE || "/api";
+    return Dom.meta("api-base") || global.API_BASE || "/api/v1";
   }
 
   function isPlainObject(v) {

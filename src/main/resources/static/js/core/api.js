@@ -64,6 +64,7 @@
     update: wrap((id, body) => Http.request(`/agendamentos/${id}`, jsonPut(body))),
     remove: wrap((id) => Http.request(`/agendamentos/${id}`, { method: "DELETE" })),
     reativar: wrap((id) => Http.request(`/agendamentos/${id}/reativar`, { method: "PATCH" })),
+    concluir: wrap((id) => Http.request(`/agendamentos/${id}/concluir`, { method: "PATCH" })),
 
     profDisp: wrap((inicioISOWithOffset, duracaoMin, servicoId) => {
       const qs = new URLSearchParams();
