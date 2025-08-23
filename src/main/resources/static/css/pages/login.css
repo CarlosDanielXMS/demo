@@ -1,0 +1,120 @@
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #4CAF50;
+    --background-color: #f0f2f5;
+    --card-background: #ffffff;
+    --text-color: #212121;
+    --light-grey: #e0e0e0;
+    --border-color: #bdbdbd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.login-card {
+    background-color: var(--card-background);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.logo {
+    height: 100px;
+    width: auto;
+    margin-bottom: 25px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.input-group input[type="email"],
+.input-group input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 12px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input[type="email"]:focus,
+.input-group input[type="password"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+    outline: none;
+}
+
+.btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 5px rgba(33, 150, 243, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: #1976D2;
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+}
+
+.login-links {
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.login-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+    color: #1976D2;
+    text-decoration: underline;
+}

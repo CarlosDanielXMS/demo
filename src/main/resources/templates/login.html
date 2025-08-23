@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="api-base" content="/api/v1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Agendamentos - Login</title>
+
+  <link rel="stylesheet" th:href="@{/css/pages/login.css}" href="/css/pages/login.css">
+  <link rel="icon" th:href="@{imgs/favicon.png}" type="image/x-icon">
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <img th:src="@{/imgs/logo.png}" alt="Logo do Sistema" class="logo">
+
+      <form id="login-form" method="post">
+        <div class="input-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" required>
+        </div>
+        <div class="input-group">
+          <label for="password">Senha</label>
+          <input type="password" id="password" name="senha" placeholder="********" required>
+        </div>
+
+        <div id="login-error" class="form-error" style="display:none;margin-top:8px;"></div>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
+
+      <div class="login-links">
+        <a href="#" class="forgot-password">Esqueci minha senha</a>
+        <a href="#" class="register">Cadastre-se</a>
+      </div>
+    </div>
+  </div>
+
+  <script th:src="@{/js/core/http.js}" defer></script>
+  <script th:src="@{/js/core/api.js}" defer></script>
+  <script th:src="@{/js/controllers/auth.js}" defer></script>
+</body>
+
+</html>

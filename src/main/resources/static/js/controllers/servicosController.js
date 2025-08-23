@@ -1,23 +1,23 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   const { Api, Modal, Dom } = window.App;
 
-  const tbody        = Dom.qs("#servicos-body");
-  const searchInput  = Dom.qs("#search-servico");
-  const statusFilter = Dom.qs("#filter-servico-status");
-  const addBtn       = Dom.qs("#add-servico-btn");
-  const modal        = Dom.qs("#servico-modal");
-  const form         = Dom.qs("#servico-form");
-  const cancelBtn    = Dom.qs("#servico-cancel");
+  const tbody = Dom.qs('#servicos-body');
+  const searchInput = Dom.qs('#search-servico');
+  const statusFilter = Dom.qs('#filter-servico-status');
+  const addBtn = Dom.qs('#add-servico-btn');
+  const modal = Dom.qs('#servico-modal');
+  const form = Dom.qs('#servico-form');
+  const cancelBtn = Dom.qs('#servico-cancel');
 
   if (!tbody || !form || !modal) return;
 
   const isAtivo = (status) => Number(status) === 1;
-  const fmtMoney = (v) => (v == null || v === "") ? "-" : Number(v).toFixed(2);
-  const fmtInt   = (v) => (v == null || v === "") ? "-" : parseInt(v, 10);
+  const fmtMoney = (v) => (v == null || v === '') ? '-' : Number(v).toFixed(2);
+  const fmtInt = (v) => (v == null || v === '') ? '-' : parseInt(v, 10);
 
   const renderRow = (s) => {
     const ativo = isAtivo(s.status);
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${s.descricao}</td>
       <td>${fmtMoney(s.valor)}</td>
@@ -41,18 +41,18 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const bindRowEvents = () => {
-    Dom.qsa(".edit-servico-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const id = btn.getAttribute("data-id");
-        const s  = await Api.Servicos.get(id);
+    Dom.qsa('.edit-servico-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const s = await Api.Servicos.get(id);
         openModal(s);
       });
     });
 
-    Dom.qsa(".toggle-status-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const id = btn.getAttribute("data-id");
-        const currentStatus = Number(btn.getAttribute("data-status"));
+    Dom.qsa('.toggle-status-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const currentStatus = Number(btn.getAttribute('data-status'));
         if (!id) return;
         if (!confirm(`Confirmar ${currentStatus === 1 ? 'inativação' : 'reativação'}?`)) return;
 
@@ -64,8 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           reloadWithCurrentFilters();
         } catch (err) {
-          console.error("Erro ao atualizar status do serviço:", err);
-          alert("Operação falhou. Verifique o console.");
+          console.error('Erro ao atualizar status do serviço:', err);
+          alert('Operação falhou. Verifique o console.');
         }
       });
     });
@@ -78,64 +78,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
       servicos.sort((a, b) => (a.status === b.status ? 0 : (a.status === 1 ? -1 : 1)));
 
-      tbody.innerHTML = "";
+      tbody.innerHTML = '';
       servicos.forEach(s => tbody.appendChild(renderRow(s)));
       bindRowEvents();
     } catch (err) {
-      console.error("Erro ao carregar serviços:", err);
-      alert("Erro ao carregar dados. Verifique o console.");
+      console.error('Erro ao carregar serviços:', err);
+      alert('Erro ao carregar dados. Verifique o console.');
     }
   };
 
   const openModal = (s = null) => {
     form.reset();
-    Dom.qs("#servico-id").value = "";
+    Dom.qs('#servico-id').value = '';
 
     if (s) {
-      Dom.qs("#descricao").value   = s.descricao ?? "";
-      Dom.qs("#valor").value       = s.valor ?? "";
-      Dom.qs("#tempoMedio").value  = s.tempoMedio ?? "";
-      Dom.qs("#status").value      = String(s.status ?? 1);
-      Dom.qs("#servico-id").value  = s.id;
-      Dom.qs("#modal-title").textContent = "Editar Serviço";
+      Dom.qs('#descricao').value = s.descricao ?? '';
+      Dom.qs('#valor').value = s.valor ?? '';
+      Dom.qs('#tempoMedio').value = s.tempoMedio ?? '';
+      Dom.qs('#status').value = String(s.status ?? 1);
+      Dom.qs('#servico-id').value = s.id;
+      Dom.qs('#modal-title').textContent = 'Editar Serviço';
     } else {
-      Dom.qs("#status").value = "1";
-      Dom.qs("#modal-title").textContent = "Cadastrar Serviço";
+      Dom.qs('#status').value = '1';
+      Dom.qs('#modal-title').textContent = 'Cadastrar Serviço';
     }
 
     Modal.open(modal);
   };
 
   const reloadWithCurrentFilters = () => {
-    const stVal   = statusFilter.value === 'all' ? null : statusFilter.value;
-    const descVal = (searchInput.value || "").trim();
+    const stVal = statusFilter.value === 'all' ? null : statusFilter.value;
+    const descVal = (searchInput.value || '').trim();
     const filters = {};
-    if (stVal)   filters.status = stVal;
+    if (stVal) filters.status = stVal;
     if (descVal) filters.descricao = descVal;
     loadServicos(filters);
   };
 
-  addBtn.addEventListener("click", () => openModal());
-  Modal.bindBasic(modal, ".close-button");
-  cancelBtn.addEventListener("click", () => Modal.close(modal));
+  addBtn.addEventListener('click', () => openModal());
+  Modal.bindBasic(modal, '.close-button');
+  cancelBtn.addEventListener('click', () => Modal.close(modal));
 
-  searchInput.addEventListener("input", () => reloadWithCurrentFilters());
-  statusFilter.addEventListener("change", () => reloadWithCurrentFilters());
+  searchInput.addEventListener('input', () => reloadWithCurrentFilters());
+  statusFilter.addEventListener('change', () => reloadWithCurrentFilters());
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const fd  = new FormData(form);
+    const fd = new FormData(form);
     const raw = Object.fromEntries(fd.entries());
 
-    const valor = raw.valor != null && raw.valor !== "" ? Number(raw.valor) : NaN;
-    const tempo = raw.tempoMedio != null && raw.tempoMedio !== "" ? Number(raw.tempoMedio) : NaN;
+    const valor = raw.valor != null && raw.valor !== '' ? Number(raw.valor) : NaN;
+    const tempo = raw.tempoMedio != null && raw.tempoMedio !== '' ? Number(raw.tempoMedio) : NaN;
 
-    if (!(valor > 0)) { alert("Valor deve ser maior que 0."); return; }
-    if (!(tempo > 0)) { alert("Tempo médio deve ser maior que 0."); return; }
+    if (!(valor > 0)) { alert('Valor deve ser maior que 0.'); return; }
+    if (!(tempo > 0)) { alert('Tempo médio deve ser maior que 0.'); return; }
 
     const payload = {
       id: raw.id ? Number(raw.id) : undefined,
-      descricao: (raw.descricao || "").trim(),
+      descricao: (raw.descricao || '').trim(),
       valor: valor,
       tempoMedio: Math.trunc(tempo),
       status: Number(raw.status || 1)
@@ -150,11 +150,11 @@ document.addEventListener("DOMContentLoaded", () => {
       Modal.close(modal);
       reloadWithCurrentFilters();
     } catch (err) {
-      console.error("Erro ao salvar serviço:", err);
-      alert("Erro ao salvar. Verifique o console.");
+      console.error('Erro ao salvar serviço:', err);
+      alert('Erro ao salvar. Verifique o console.');
     }
   });
 
-  statusFilter.value = "1";
+  statusFilter.value = '1';
   loadServicos({ status: 1 });
 });

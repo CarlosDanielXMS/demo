@@ -23,9 +23,13 @@
   --color-text-on-secondary:  #FFFFFF;
   --color-text-inverted:      #0F1216;
 
-  --color-primary-base:  #4EA1FF;
+  --color-primary-base: #27DDDF;
+  --color-primary-dark: rgb(16, 90, 91);
+  --color-primary-light: #0cdadd8b;
+
+  /* --color-primary-base:  #4EA1FF;
   --color-primary-dark:  #2F7FD6;
-  --color-primary-light: #284B74;
+  --color-primary-light: #284B74; */
   --focus-ring-color:    rgba(78, 161, 255, .45);
 
   --color-secondary-base: #63C07A;

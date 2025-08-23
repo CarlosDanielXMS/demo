@@ -1,6 +1,7 @@
 package com.teste.demo.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,6 @@ public interface ProfissionalRepository extends JpaRepository<Profissional, Inte
             @Param("nome") String nome,
             @Param("telefone") String telefone,
             @Param("email") String email);
+
+    Optional<Profissional> findByEmailAndSenha(String email, String senha);
 }

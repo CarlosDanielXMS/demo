@@ -1,10 +1,10 @@
 :root {
-  /* Brand — Primary */
+  /* Primary colors */
   --color-primary-base: #2196F3;
   --color-primary-dark: #1976D2;
   --color-primary-light: #BBDEFB;
 
-  /* Brand — Secondary */
+  /* Secondary colors */
   --color-secondary-base: #4CAF50;
   --color-secondary-dark: #388E3C;
 
@@ -57,7 +57,7 @@
   --slot-height: 50px;
   --time-column-width: 80px;
 
-  /* Border radius & spacing scale */
+  /* Border radius & spacing */
   --radius-6: 6px;
   --radius-8: 8px;
   --radius-10: 10px;

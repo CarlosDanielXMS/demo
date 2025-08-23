@@ -1,20 +1,20 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   const { Api, Modal, Dom } = window.App;
-  const clientesBody = Dom.qs("#clientes-body");
-  const searchInput = Dom.qs("#search-cliente");
-  const statusFilter = Dom.qs("#filter-cliente-status");
-  const addBtn = Dom.qs("#add-cliente-btn");
-  const modal = Dom.qs("#cliente-modal");
-  const form = Dom.qs("#cliente-form");
-  const cancelBtn    = Dom.qs("#cliente-cancel");
-  const senhaGroup = Dom.qs("#senha-group");
-  const senhaInput = Dom.qs("#senha");
+  const clientesBody = Dom.qs('#clientes-body');
+  const searchInput = Dom.qs('#search-cliente');
+  const statusFilter = Dom.qs('#filter-cliente-status');
+  const addBtn = Dom.qs('#add-cliente-btn');
+  const modal = Dom.qs('#cliente-modal');
+  const form = Dom.qs('#cliente-form');
+  const cancelBtn = Dom.qs('#cliente-cancel');
+  const senhaGroup = Dom.qs('#senha-group');
+  const senhaInput = Dom.qs('#senha');
 
   const isAtivo = (status) => Number(status) === 1;
 
   const renderClienteRow = (cliente) => {
     const ativo = isAtivo(cliente.status);
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${cliente.nome}</td>
       <td>${cliente.telefone || '-'}</td>
@@ -48,22 +48,22 @@ document.addEventListener("DOMContentLoaded", () => {
       clientes.forEach(cliente => clientesBody.appendChild(renderClienteRow(cliente)));
       bindEvents();
     } catch (err) {
-      console.error("Erro ao carregar clientes:", err);
-      alert("Erro ao carregar dados. Verifique o console.");
+      console.error('Erro ao carregar clientes:', err);
+      alert('Erro ao carregar dados. Verifique o console.');
     }
   };
 
   const bindEvents = () => {
-    Dom.qsa(".edit-cliente-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
+    Dom.qsa('.edit-cliente-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
         const cliente = await Api.Clientes.get(id);
         openModal(cliente);
       });
     });
 
-    Dom.qsa(".toggle-status-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
+    Dom.qsa('.toggle-status-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
         const currentStatus = Number(btn.dataset.status);
         if (confirm(`Confirmar ${currentStatus === 1 ? 'inativação' : 'reativação'}?`)) {
@@ -77,8 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const nomeVal = searchInput.value || null;
             loadClientes({ ...(statusVal ? { status: statusVal } : {}), ...(nomeVal ? { nome: nomeVal } : {}) });
           } catch (err) {
-            console.error("Erro ao atualizar status:", err);
-            alert("Operação falhou. Verifique o console.");
+            console.error('Erro ao atualizar status:', err);
+            alert('Operação falhou. Verifique o console.');
           }
         }
       });
@@ -92,10 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (existingIdField) existingIdField.remove();
 
     if (cliente) {
-      Dom.qs("#nome").value = cliente.nome || '';
-      Dom.qs("#telefone").value = cliente.telefone || '';
-      Dom.qs("#email").value = cliente.email || '';
-      Dom.qs("#status").value = String(cliente.status ?? 1);
+      Dom.qs('#nome').value = cliente.nome || '';
+      Dom.qs('#telefone').value = cliente.telefone || '';
+      Dom.qs('#email').value = cliente.email || '';
+      Dom.qs('#status').value = String(cliente.status ?? 1);
 
       senhaGroup.style.display = 'none';
       senhaInput.value = '';
@@ -107,38 +107,38 @@ document.addEventListener("DOMContentLoaded", () => {
       idField.value = cliente.id;
       form.appendChild(idField);
 
-      Dom.qs("#modal-title").textContent = "Editar Cliente";
+      Dom.qs('#modal-title').textContent = 'Editar Cliente';
     } else {
-      Dom.qs("#status").value = "1";
+      Dom.qs('#status').value = '1';
       senhaGroup.style.display = 'block';
       senhaInput.required = true;
       senhaInput.value = '';
-      Dom.qs("#modal-title").textContent = "Novo Cliente";
+      Dom.qs('#modal-title').textContent = 'Novo Cliente';
     }
 
     Modal.open(modal);
   };
 
-  addBtn.addEventListener("click", () => openModal());
+  addBtn.addEventListener('click', () => openModal());
 
-  searchInput.addEventListener("input", () => {
+  searchInput.addEventListener('input', () => {
     const searchTerm = searchInput.value.toLowerCase();
-    const rows = Dom.qsa("#clientes-body tr");
+    const rows = Dom.qsa('#clientes-body tr');
     rows.forEach(row => {
       const nome = row.cells[0].textContent.toLowerCase();
       const telefone = row.cells[1].textContent.toLowerCase();
       const email = row.cells[2].textContent.toLowerCase();
       const show = nome.includes(searchTerm) || telefone.includes(searchTerm) || email.includes(searchTerm);
-      row.style.display = show ? "" : "none";
+      row.style.display = show ? '' : 'none';
     });
   });
 
-  statusFilter.addEventListener("change", () => {
+  statusFilter.addEventListener('change', () => {
     const status = statusFilter.value === 'all' ? null : statusFilter.value;
     loadClientes({ status });
   });
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const fd = new FormData(form);
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nome: (raw.nome || '').trim(),
       telefone: (raw.telefone || '').trim(),
       email: raw.email ? raw.email.trim() : null,
-      status: Number(raw.status || 1),
+      status: Number(raw.status || 1)
     };
 
     if (!payload.id) {
@@ -167,13 +167,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const nomeVal = searchInput.value || null;
       loadClientes({ ...(statusVal ? { status: statusVal } : {}), ...(nomeVal ? { nome: nomeVal } : {}) });
     } catch (err) {
-      console.error("Erro ao salvar cliente:", err);
-      alert("Erro ao salvar. Verifique o console.");
+      console.error('Erro ao salvar cliente:', err);
+      alert('Erro ao salvar. Verifique o console.');
     }
   });
 
-  Modal.bindBasic(modal, ".close-button");
-  cancelBtn.addEventListener("click", () => Modal.close(modal));
+  Modal.bindBasic(modal, '.close-button');
+  cancelBtn.addEventListener('click', () => Modal.close(modal));
 
   loadClientes({ status: 1 });
 });

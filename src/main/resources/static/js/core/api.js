@@ -21,6 +21,12 @@
     headers: { "Content-Type": "application/json" }
   });
 
+  const Auth = {
+    login:    wrap((body) => Http.request(`/auth/login`, jsonPost(body))),
+    me:       wrap(() => Http.request(`/auth/me`)),
+    logout:   wrap(() => Http.request(`/auth/logout`, { method: "POST" }))
+  };
+
   const Clientes = {
     list: wrap((query = '') => Http.request(`/clientes${query}`)),
     get: wrap((id) => Http.request(`/clientes/${id}`)),
@@ -85,5 +91,5 @@
     reativar: wrap((agendaId, servId, profId) => Http.request(`/agendamentos/${agendaId}/servicosAgendados/${servId}/${profId}/reativar`, { method: "PATCH" })),
   };
 
-  global.App.Api = { Clientes, Profissionais, Servicos, Catalogo, Agendamentos, ServicosAgendados };
+  global.App.Api = { Auth, Clientes, Profissionais, Servicos, Catalogo, Agendamentos, ServicosAgendados };
 })(window);

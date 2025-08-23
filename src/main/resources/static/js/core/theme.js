@@ -1,4 +1,4 @@
-(function (global) {
+(function(global) {
   global.App = global.App || {};
   const Dom = (global.App && global.App.Dom) || {};
   const qs  = Dom.qs  || ((sel, root = document) => root.querySelector(sel));
@@ -14,15 +14,25 @@
   function prefersDark() {
     return !!(global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches);
   }
+
   function getStored() {
-    try { return localStorage.getItem(THEME_KEY); } catch { return null; }
+    try {
+      return localStorage.getItem(THEME_KEY);
+    } catch {
+      return null;
+    }
   }
+
   function setStored(mode) {
-    try { localStorage.setItem(THEME_KEY, mode); } catch {}
+    try {
+      localStorage.setItem(THEME_KEY, mode);
+    } catch {}
   }
+
   function get() {
     return root.classList.contains(DARK_CLASS) ? 'dark' : 'light';
   }
+
   function dispatch(mode) {
     try {
       document.dispatchEvent(new CustomEvent('app:themechange', { detail: { mode } }));
@@ -106,7 +116,7 @@
     toggle,
     get,
     set: (mode) => {
-      if (!['light','dark','system'].includes(mode)) {
+      if (!['light', 'dark', 'system'].includes(mode)) {
         throw new Error('App.Theme.set(mode): use "light" | "dark" | "system".');
       }
       return apply(mode);

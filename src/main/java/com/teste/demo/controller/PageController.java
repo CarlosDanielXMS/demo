@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teste.demo.service.ClienteService;
 import com.teste.demo.service.ProfissionalService;
 import com.teste.demo.service.ServicoService;
+
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Controller;
@@ -26,50 +28,73 @@ public class PageController {
         return "/api/v1";
     }
 
+    @GetMapping("/login")
+    public String loginPage(HttpSession session) {
+        if (session.getAttribute("usuario") != null) {
+            return "redirect:/agendamentos";
+        }
+        return "login";
+    }
+
     @GetMapping("/agendamentos")
-    public String agendamentos(Model model) {
+    public String agendamentos(HttpSession session, Model model) {
+        if (session.getAttribute("usuario") == null)
+            return "redirect:/login";
+
         model.addAttribute("activePage", "agendamentos");
 
         var clientesAtivos = clienteService.listar("1", null, null, null);
         var servicosAtivos = servicoService.listar("1", null, null, null);
         var profissionaisAtivos = profissionalService.listar("1", null, null, null);
 
-        model.addAttribute("clientesJson", toJsonSilencioso(clientesAtivos));
-        model.addAttribute("servicosJson", toJsonSilencioso(servicosAtivos));
-        model.addAttribute("profissionaisJson", toJsonSilencioso(profissionaisAtivos));
+        model.addAttribute("clientesJson", toJson(clientesAtivos));
+        model.addAttribute("servicosJson", toJson(servicosAtivos));
+        model.addAttribute("profissionaisJson", toJson(profissionaisAtivos));
 
         return "agendamentos";
     }
 
     @GetMapping("/clientes")
-    public String clientes(Model model) {
+    public String clientes(HttpSession session, Model model) {
+        if (session.getAttribute("usuario") == null)
+            return "redirect:/login";
+
         model.addAttribute("activePage", "clientes");
 
         return "clientes";
     }
 
     @GetMapping("/profissionais")
-    public String profissionais(Model model) {
+    public String profissionais(HttpSession session, Model model) {
+        if (session.getAttribute("usuario") == null)
+            return "redirect:/login";
+
         model.addAttribute("activePage", "profissionais");
 
         return "profissionais";
     }
 
     @GetMapping("/servicos")
-    public String servicos(Model model) {
+    public String servicos(HttpSession session, Model model) {
+        if (session.getAttribute("usuario") == null)
+            return "redirect:/login";
+
         model.addAttribute("activePage", "servicos");
 
         return "servicos";
     }
 
     @GetMapping("/catalogo")
-    public String catalogo(Model model) {
+    public String catalogo(HttpSession session, Model model) {
+        if (session.getAttribute("usuario") == null)
+            return "redirect:/login";
+
         model.addAttribute("activePage", "catalogo");
 
         return "catalogo";
     }
 
-    private String toJsonSilencioso(Object value) {
+    private String toJson(Object value) {
         try {
             return objectMapper.writeValueAsString(value);
         } catch (Exception e) {
