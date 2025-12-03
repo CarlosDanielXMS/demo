@@ -54,9 +54,7 @@ public class ProfissionalService {
 
     @Transactional
     public void inativar(Integer id) {
-        Profissional existente = buscarPorId(id);
-        existente.setStatus((short) 2);
-        repo.save(existente);
+        repo.deleteById(id);
     }
 
     @Transactional

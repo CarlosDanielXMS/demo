@@ -54,10 +54,7 @@ public class ClienteService {
 
     @Transactional
     public void inativar(Integer id) {
-        repo.findById(id).ifPresent(cliente -> {
-            cliente.setStatus((short) 2);
-            repo.save(cliente);
-        });
+        repo.deleteById(id);
     }
 
     @Transactional

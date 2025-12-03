@@ -59,6 +59,7 @@ public class ServicoAgendadoService {
     public ServicoAgendado atualizar(ServicoAgendadoId id, ServicoAgendado body) {
         ServicoAgendado existente = buscarPorId(id);
 
+        // Atualiza apenas valor e status do serviço agendado
         if (body.getValor() != null) {
             existente.setValor(body.getValor());
         }
@@ -66,44 +67,54 @@ public class ServicoAgendadoService {
             existente.setStatus(body.getStatus());
         }
 
+        // Detecta mudança de serviço ou profissional
+        boolean mudouServicoOuProfissional = false;
         Integer novoProfissionalId = existente.getProfissional().getId();
         Integer novoServicoId = existente.getServico().getId();
-        boolean mudou = false;
 
-        if (body.getProfissional() != null && body.getProfissional().getId() != null) {
+        if (body.getProfissional() != null && body.getProfissional().getId() != null
+                && !body.getProfissional().getId().equals(novoProfissionalId)) {
             novoProfissionalId = body.getProfissional().getId();
-            mudou = true;
-        }
-        if (body.getServico() != null && body.getServico().getId() != null) {
-            novoServicoId = body.getServico().getId();
-            mudou = true;
+            mudouServicoOuProfissional = true;
         }
 
-        if (mudou) {
+        if (body.getServico() != null && body.getServico().getId() != null
+                && !body.getServico().getId().equals(novoServicoId)) {
+            novoServicoId = body.getServico().getId();
+            mudouServicoOuProfissional = true;
+        }
+
+        if (mudouServicoOuProfissional) {
+            // Busca catálogo do novo serviço/profissional
             Catalogo catalogo = catalogoRepo.findById(new CatalogoId(novoProfissionalId, novoServicoId))
                     .orElseThrow(() -> new IllegalArgumentException("Catálogo não encontrado"));
+
             if (catalogo.getStatus() != 1) {
                 throw new IllegalStateException("Catálogo inativo");
             }
 
+            // Atualiza referência do serviço e profissional
             existente.setProfissional(body.getProfissional());
             existente.setServico(body.getServico());
 
+            // Atualiza ID composto
             ServicoAgendadoId novoId = new ServicoAgendadoId(
                     existente.getAgenda().getId(),
                     novoServicoId,
                     novoProfissionalId);
             existente.setId(novoId);
 
+            // Verifica disponibilidade e conflitos usando tempo do catálogo
             Agenda agenda = existente.getAgenda();
             LocalDateTime inicioServico = calcularInicioDoServicoNaAgenda(agenda, existente);
             LocalDateTime fimServico = inicioServico.plusMinutes(
                     Optional.ofNullable(catalogo.getTempoMedio())
-                            .orElseGet(() -> catalogo.getServico().getTempoMedio()));
+                            .orElse(catalogo.getServico().getTempoMedio()));
             verificarDisponibilidadeProfissional(novoProfissionalId, inicioServico, fimServico, novoId);
             verificarConflitos(agenda, existente);
         }
 
+        // Persiste alterações e recalcula totais
         ServicoAgendado salvo = repo.save(existente);
         agendaService.recalcularTotais(existente.getAgenda().getId());
         return salvo;
@@ -132,13 +143,11 @@ public class ServicoAgendadoService {
     @Transactional
     public void inativar(ServicoAgendadoId id) {
         ServicoAgendado existente = buscarPorId(id);
-        existente.setStatus((short) 2);
-        repo.save(existente);
+
+        repo.deleteById(id);
 
         Agenda a = existente.getAgenda();
-        if (a != null && a.getId() != null) {
-            agendaService.recalcularTotais(a.getId());
-        }
+        agendaService.recalcularTotais(a.getId());
     }
 
     @Transactional
@@ -162,8 +171,8 @@ public class ServicoAgendadoService {
             if (sa.equals(novo))
                 break;
 
-            CatalogoId catId = new CatalogoId(sa.getProfissional().getId(), sa.getServico().getId());
-            Catalogo catalogo = catalogoRepo.findById(catId)
+            Catalogo catalogo = catalogoRepo
+                    .findById(new CatalogoId(sa.getProfissional().getId(), sa.getServico().getId()))
                     .orElseThrow(() -> new IllegalArgumentException("Catálogo não encontrado"));
 
             tempoTotalAnterior += Optional.ofNullable(catalogo.getTempoMedio())

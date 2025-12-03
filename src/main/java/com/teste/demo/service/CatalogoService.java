@@ -39,32 +39,46 @@ public class CatalogoService {
 
     @Transactional
     public Catalogo criar(Catalogo body) {
-        CatalogoId id = body.getId();
-        if (id != null && repo.existsById(id)) {
-            throw new IllegalArgumentException("Este profissional já presta esse serviço");
-        }
-
-        Profissional profissional = profissionalRepo.findById(body.getProfissional().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
-        body.setProfissional(profissional);
-
-        Servico servico = servicoRepo.findById(body.getServico().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado"));
-        body.setServico(servico);
-
-        if (body.getStatus() == null)
-            body.setStatus((short) 1);
-
-        if (body.getValor() == null) {
-            body.setValor(servico.getValor());
-        }
-
-        if (body.getTempoMedio() == null) {
-            body.setTempoMedio(servico.getTempoMedio());
-        }
-
-        return repo.save(body);
+    if (body == null || body.getProfissional() == null || body.getServico() == null) {
+        throw new IllegalArgumentException("Profissional e Serviço são obrigatórios.");
     }
+
+    Integer profId = body.getProfissional().getId();
+    Integer servId = body.getServico().getId();
+
+    if (profId == null || servId == null) {
+        throw new IllegalArgumentException("IDs de profissional e serviço devem ser informados.");
+    }
+
+    CatalogoId newId = new CatalogoId(profId, servId);
+    if (repo.existsById(newId)) {
+        throw new IllegalArgumentException("Este profissional já presta esse serviço");
+    }
+
+    Profissional profissional = profissionalRepo.findById(profId)
+            .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado"));
+    Servico servico = servicoRepo.findById(servId)
+            .orElseThrow(() -> new IllegalArgumentException("Serviço não encontrado"));
+
+    body.setId(newId);
+    body.setProfissional(profissional);
+    body.setServico(servico);
+
+    if (body.getStatus() == null) {
+        body.setStatus((short) 1);
+    }
+
+    if (body.getValor() == null) {
+        body.setValor(servico.getValor());
+    }
+
+    if (body.getTempoMedio() == null) {
+        body.setTempoMedio(servico.getTempoMedio());
+    }
+
+    return repo.save(body);
+}
+
 
     @Transactional
     public Catalogo atualizar(CatalogoId id, Catalogo body) {
@@ -91,10 +105,8 @@ public class CatalogoService {
     }
 
     @Transactional
-    public void remover(CatalogoId id) {
-        Catalogo existente = buscarPorId(id);
-        existente.setStatus((short) 2);
-        repo.save(existente);
+    public void inativar(CatalogoId id) {
+        repo.deleteById(id);
     }
 
     @Transactional

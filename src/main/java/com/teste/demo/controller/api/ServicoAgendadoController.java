@@ -66,7 +66,7 @@ public class ServicoAgendadoController {
             @PathVariable Integer servicoId,
             @PathVariable Integer profissionalId) {
         ServicoAgendadoId id = new ServicoAgendadoId(agendaId, servicoId, profissionalId);
-        service.remover(id);
+        service.inativar(id);
         return ResponseEntity.noContent().build();
     }
 

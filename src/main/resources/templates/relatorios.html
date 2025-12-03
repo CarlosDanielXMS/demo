@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{base}">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Relatórios</title>
+  <link rel="icon" th:href="@{/assets/favicon.ico}" href="/assets/favicon.ico">
+
+  <link rel="stylesheet" th:href="@{/css/pages/reports-page.css}"/>
+</head>
+
+<body>
+<section layout:fragment="content">
+
+  <div class="module-header">
+    <h2>Relatórios &amp; Dashboards</h2>
+    <button id="backup-btn" type="button" class="btn btn-outline">
+      <span class="material-icons">backup</span>
+      <span>Backup do Banco</span>
+    </button>
+  </div>
+
+  <section class="reports-section">
+    <h3>Dashboards do Power BI</h3>
+    <p class="section-subtitle">
+      Clique em um card para abrir o dashboard correspondente.
+    </p>
+
+    <div class="reports-grid">
+
+      <article class="report-card"
+               data-report-title="Visão Geral do Negócio"
+               data-report-url="https://app.powerbi.com/view?r=eyJrIjoiOThjMGM1YmItOTIzZS00ZTQ0LWE1MzItMWE3NjU3YWRkODdhIiwidCI6ImIxMDUxYzRiLTNiOTQtNDFhYi05NDQxLWU3M2E3MjM0MmZkZCJ9">
+        <header class="report-card-header">
+          <div class="report-icon">
+            <span class="material-icons">insights</span>
+          </div>
+          <div class="report-card-titles">
+            <h4 class="report-title">Visão Geral do Negócio</h4>
+            <span class="report-subtitle">Agenda, receita e ocupação</span>
+          </div>
+        </header>
+        <p class="report-description">
+          Resumo diário e mensal de agendamentos, faturamento e taxa de ocupação dos profissionais.
+        </p>
+        <div class="report-meta">
+          <span class="report-tag">Operacional</span>
+          <span class="report-tag">Diário</span>
+        </div>
+      </article>
+
+      <article class="report-card"
+               data-report-title="Clientes &amp; Fidelização"
+               data-report-url="https://app.powerbi.com/view?r=RELATORIO_CLIENTES">
+        <header class="report-card-header">
+          <div class="report-icon">
+            <span class="material-icons">people</span>
+          </div>
+          <div class="report-card-titles">
+            <h4 class="report-title">Clientes &amp; Fidelização</h4>
+            <span class="report-subtitle">Retorno, ticket médio e perfil</span>
+          </div>
+        </header>
+        <p class="report-description">
+          Acompanhe a base de clientes, recorrência, ticket médio e comportamento de retorno.
+        </p>
+        <div class="report-meta">
+          <span class="report-tag">Clientes</span>
+          <span class="report-tag">Análise</span>
+        </div>
+      </article>
+
+      <article class="report-card"
+               data-report-title="Desempenho por Profissional"
+               data-report-url="https://app.powerbi.com/view?r=RELATORIO_PROFISSIONAIS">
+        <header class="report-card-header">
+          <div class="report-icon">
+            <span class="material-icons">work</span>
+          </div>
+          <div class="report-card-titles">
+            <h4 class="report-title">Desempenho por Profissional</h4>
+            <span class="report-subtitle">Produtividade e receita</span>
+          </div>
+        </header>
+        <p class="report-description">
+          Ranking de profissionais por faturamento, quantidade de serviços e taxa de ocupação.
+        </p>
+        <div class="report-meta">
+          <span class="report-tag">Profissionais</span>
+          <span class="report-tag">Performance</span>
+        </div>
+      </article>
+
+      <article class="report-card"
+               data-report-title="Serviços &amp; Mix"
+               data-report-url="https://app.powerbi.com/view?r=RELATORIO_SERVICOS">
+        <header class="report-card-header">
+          <div class="report-icon">
+            <span class="material-icons">content_cut</span>
+          </div>
+          <div class="report-card-titles">
+            <h4 class="report-title">Serviços &amp; Mix</h4>
+            <span class="report-subtitle">Top serviços e combos</span>
+          </div>
+        </header>
+        <p class="report-description">
+          Entenda quais serviços mais vendem, combinações frequentes e oportunidades de pacote.
+        </p>
+        <div class="report-meta">
+          <span class="report-tag">Serviços</span>
+          <span class="report-tag">Mix</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="report-viewer" class="report-viewer" hidden>
+    <div class="report-viewer-header">
+      <div>
+        <h3 id="report-viewer-title">Relatório</h3>
+        <p class="viewer-subtitle">
+          O dashboard é carregado em um iframe seguro diretamente do Power BI.
+        </p>
+      </div>
+      <button id="close-report-btn" type="button" class="btn btn-icon-only" title="Fechar relatório">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="report-viewer-body">
+      <iframe id="report-iframe"
+              src=""
+              frameborder="0"
+              allowfullscreen="true">
+      </iframe>
+    </div>
+  </section>
+
+</section>
+
+<th:block layout:fragment="page-scripts">
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+      const apiBase = /*[[${apiBase}]]*/ '/api/v1';
+      const { Api } = window.App || {};
+
+      const backupBtn   = document.getElementById('backup-btn');
+      const reportCards = document.querySelectorAll('.report-card');
+      const viewer      = document.getElementById('report-viewer');
+      const viewerTitle = document.getElementById('report-viewer-title');
+      const iframe      = document.getElementById('report-iframe');
+      const closeBtn    = document.getElementById('close-report-btn');
+
+      if (backupBtn) {
+        backupBtn.addEventListener('click', async () => {
+          if (!confirm('Gerar backup manual do banco de dados agora?')) return;
+
+          try {
+            backupBtn.disabled = true;
+            backupBtn.classList.add('is-loading');
+
+            if (Api && Api.Backup && typeof Api.Backup.manual === 'function') {
+              const resp = await Api.Backup.manual();
+              const msg = resp?.message || 'Backup gerado com sucesso.';
+              const path = resp?.filePath;
+              alert(path ? `${msg}\n\nArquivo gerado em:\n${path}` : msg);
+            } else {
+              const resp = await fetch(apiBase + '/backup/manual', { method: 'POST' });
+
+              if (!resp.ok) {
+                throw new Error('Erro HTTP ' + resp.status);
+              }
+
+              const data = await resp.json().catch(() => null);
+              const msg = data?.message || 'Backup gerado com sucesso.';
+              const path = data?.filePath;
+              alert(path ? `${msg}\n\nArquivo gerado em:\n${path}` : msg);
+            }
+          } catch (err) {
+            console.error('Erro ao iniciar backup:', err);
+            alert('Não foi possível iniciar o backup. Verifique o servidor.');
+          } finally {
+            backupBtn.disabled = false;
+            backupBtn.classList.remove('is-loading');
+          }
+        });
+      }
+
+      reportCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const url   = card.dataset.reportUrl;
+          const title = card.dataset.reportTitle
+            || card.querySelector('.report-title')?.textContent
+            || 'Relatório';
+
+          if (!url) {
+            console.warn('Card de relatório sem data-report-url definido.');
+            return;
+          }
+
+          viewer.hidden = false;
+          viewerTitle.textContent = title;
+          iframe.src = url;
+
+          viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          iframe.src = '';
+          viewer.hidden = true;
+        });
+      }
+    });
+  </script>
+</th:block>
+
+</body>
+</html>

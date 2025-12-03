@@ -1,15 +1,13 @@
 package com.teste.demo.service;
 
 import com.teste.demo.model.Agenda;
-import com.teste.demo.model.Catalogo;
-import com.teste.demo.model.CatalogoId;
 import com.teste.demo.model.Profissional;
 import com.teste.demo.model.ServicoAgendado;
 import com.teste.demo.repository.AgendaRepository;
-import com.teste.demo.repository.CatalogoRepository;
 import com.teste.demo.repository.ServicoAgendadoRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,7 +16,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +24,7 @@ public class AgendaService {
 
     private final AgendaRepository repo;
     private final ServicoAgendadoRepository servicoAgendadoRepo;
-    private final CatalogoRepository catalogoRepo;
+    private final JdbcTemplate jdbcTemplate;
 
     public List<Agenda> listar(LocalDate data, Integer clientId, String status, Integer tempoTotalMin,
             BigDecimal valorTotalMin) {
@@ -60,47 +57,14 @@ public class AgendaService {
 
     @Transactional
     public void recalcularTotais(Integer agendaId) {
-        Agenda agenda = buscarPorId(agendaId);
-
-        BigDecimal valorTotal = BigDecimal.ZERO;
-        int tempoTotal = 0;
-
-        for (ServicoAgendado sa : agenda.getServicosAgendados()) {
-            if (sa.getStatus() != 1)
-                continue;
-
-            valorTotal = valorTotal.add(sa.getValor());
-
-            Catalogo catalogo = catalogoRepo.findById(new CatalogoId(
-                    sa.getProfissional().getId(),
-                    sa.getServico().getId()))
-                    .orElseThrow(() -> new IllegalStateException("Catálogo inconsistente"));
-
-            Integer tempo = Optional.ofNullable(catalogo.getTempoMedio())
-                    .orElse(catalogo.getServico().getTempoMedio());
-
-            tempoTotal += tempo;
-        }
-
-        agenda.setValorTotal(valorTotal);
-        agenda.setTempoTotal(tempoTotal);
-
-        repo.save(agenda);
-
-        System.out.println("[DEBUG] Agenda ID: " + agendaId +
-                " | Serviços: " + agenda.getServicosAgendados().size() +
-                " | Valor Total: " + valorTotal +
-                " | Tempo Total: " + tempoTotal);
+        jdbcTemplate.update("EXEC sp_RecalcularTotaisAgenda @idAgenda = ?", agendaId);
     }
 
     @Transactional
     public void inativar(Integer id) {
-        Agenda existente = buscarPorId(id);
+        repo.deleteById(id);
 
-        existente.setStatus((short) 2);
-        repo.save(existente);
-
-        inativarServicosAgendados(existente);
+        inativarServicosAgendados(id);
     }
 
     @Transactional
@@ -136,30 +100,27 @@ public class AgendaService {
         }
     }
 
-    public List<Profissional> profissionaisDisponiveis(
-            LocalDateTime inicio,
-            Integer duracaoMin,
-            Integer servicoId,
-            Integer excludeAgendaId) {
-        LocalDateTime fim = inicio.plusMinutes(duracaoMin);
+    public List<Profissional> profissionaisDisponiveis(LocalDateTime inicio, Integer duracaoMin, Integer servicoId) {
+        List<Object[]> results = repo.findProfissionaisDisponiveis(servicoId, inicio);
 
-        List<Profissional> candidatos = catalogoRepo.findProfissionaisByServico(servicoId);
-
-        return candidatos.stream()
-                .filter(profissional -> !repo.existsConflitoProfissional(
-                        profissional.getId(),
-                        inicio,
-                        fim,
-                        excludeAgendaId))
-                .sorted(Comparator.comparing(Profissional::getNome))
-                .collect(Collectors.toList());
+        return results.stream().map(r -> {
+            Profissional p = new Profissional();
+            p.setId((Integer) r[0]);
+            p.setNome((String) r[1]);
+            p.setTelefone((String) r[2]);
+            p.setEmail((String) r[3]);
+            return p;
+        }).sorted(Comparator.comparing(Profissional::getNome))
+                .toList();
     }
 
-    private void inativarServicosAgendados(Agenda agenda) {
+    private void inativarServicosAgendados(Integer id) {
+        Agenda agenda = buscarPorId(id);
         List<ServicoAgendado> servicosAgendados = agenda.getServicosAgendados();
 
         servicosAgendados.forEach(sa -> sa.setStatus((short) 2));
         servicoAgendadoRepo.saveAll(servicosAgendados);
+        recalcularTotais(id);
     }
 
     private void reativarServicosAgendados(Agenda agenda) {

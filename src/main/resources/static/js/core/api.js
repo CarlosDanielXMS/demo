@@ -91,5 +91,9 @@
     reativar: wrap((agendaId, servId, profId) => Http.request(`/agendamentos/${agendaId}/servicosAgendados/${servId}/${profId}/reativar`, { method: "PATCH" })),
   };
 
-  global.App.Api = { Auth, Clientes, Profissionais, Servicos, Catalogo, Agendamentos, ServicosAgendados };
+  const Backup = {
+    manual: wrap(() => Http.request(`/backup/manual`, { method: "POST" }))
+  };
+
+  global.App.Api = { Auth, Clientes, Profissionais, Servicos, Catalogo, Agendamentos, ServicosAgendados, Backup };
 })(window);

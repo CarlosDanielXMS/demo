@@ -1,4 +1,4 @@
-(function(global) {
+(function (global) {
   const { Api, Dom } = global.App;
 
   function toISO(dateStr, time) { return `${dateStr}T${time}`; }
@@ -52,8 +52,8 @@
     });
 
     if (initial.servicoId) selServico.value = String(initial.servicoId);
-    if (initial.tempo != null) inpTempo.value = String(initial.tempo);
-    if (initial.valor != null) inpValor.value = String(Number(initial.valor).toFixed(2));
+    if (initial.tempo != null) inpTempo.value = String(Number(initial.tempo));
+    if (initial.valor != null) inpValor.value = Number(initial.valor).toFixed(2);
 
     if (initial.profId) row._profId = Number(initial.profId);
     if (initial.profNome) row._profName = String(initial.profNome);
@@ -99,7 +99,7 @@
             selProf.appendChild(opt);
             if (row._profId && Number(p.id) === Number(row._profId)) found = true;
           });
-        } else {}
+        } else { }
 
         if (row._profId && !found) {
           const opt = document.createElement('option');
@@ -141,16 +141,18 @@
   function collectItems(rows) {
     const itens = [];
     for (const r of rows) {
-      const { servicoId, profissionalId, tempo } = r.getItem();
-      if (!servicoId || !profissionalId || !tempo) {
-        return { ok: false, error: 'Cada item precisa de Serviço, Profissional e Tempo.' };
-      }
+      const { servicoId, profissionalId, tempo, valor } = r.getItem();
+      if (!servicoId || !profissionalId) continue;
+      if (!tempo) return { ok: false, error: 'Cada item precisa de Tempo válido.' };
       itens.push({
         servico: { id: servicoId },
         profissional: { id: profissionalId },
+        tempo,
+        valor,
         status: 1
       });
     }
+    if (itens.length === 0) return { ok: false, error: 'Adicione ao menos um serviço válido.' };
     return { ok: true, itens };
   }
 

@@ -78,6 +78,6 @@ public class AgendaController {
             @RequestParam Integer servicoId,
             @RequestParam(required = false) Integer agendaId) {
         return ResponseEntity.ok(
-                service.profissionaisDisponiveis(inicio, duracaoMin, servicoId, agendaId));
+                service.profissionaisDisponiveis(inicio, duracaoMin, servicoId));
     }
 }

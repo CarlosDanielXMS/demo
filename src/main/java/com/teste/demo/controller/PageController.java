@@ -1,10 +1,5 @@
 package com.teste.demo.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teste.demo.service.ClienteService;
-import com.teste.demo.service.ProfissionalService;
-import com.teste.demo.service.ServicoService;
-
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -16,12 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Controller
 @RequiredArgsConstructor
 public class PageController {
-
-    private final ObjectMapper objectMapper;
-
-    private final ClienteService clienteService;
-    private final ServicoService servicoService;
-    private final ProfissionalService profissionalService;
 
     @ModelAttribute("apiBase")
     public String apiBase() {
@@ -42,14 +31,6 @@ public class PageController {
             return "redirect:/login";
 
         model.addAttribute("activePage", "agendamentos");
-
-        var clientesAtivos = clienteService.listar("1", null, null, null);
-        var servicosAtivos = servicoService.listar("1", null, null, null);
-        var profissionaisAtivos = profissionalService.listar("1", null, null, null);
-
-        model.addAttribute("clientesJson", toJson(clientesAtivos));
-        model.addAttribute("servicosJson", toJson(servicosAtivos));
-        model.addAttribute("profissionaisJson", toJson(profissionaisAtivos));
 
         return "agendamentos";
     }
@@ -94,11 +75,13 @@ public class PageController {
         return "catalogo";
     }
 
-    private String toJson(Object value) {
-        try {
-            return objectMapper.writeValueAsString(value);
-        } catch (Exception e) {
-            return (value instanceof Iterable || value instanceof Object[]) ? "[]" : "{}";
-        }
+    @GetMapping("/relatorios")
+    public String relatorios(HttpSession session, Model model) {
+        if (session.getAttribute("usuario") == null)
+            return "redirect:/login";
+
+        model.addAttribute("activePage", "relatorios");
+
+        return "relatorios";
     }
 }

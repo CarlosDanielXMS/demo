@@ -64,9 +64,7 @@ public class ServicoService {
 
     @Transactional
     public void inativar(Integer id) {
-        Servico existente = buscarPorId(id);
-        existente.setStatus((short) 2);
-        repo.save(existente);
+        repo.deleteById(id);
     }
 
     @Transactional

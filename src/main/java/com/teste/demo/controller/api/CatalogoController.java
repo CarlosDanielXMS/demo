@@ -61,11 +61,11 @@ public class CatalogoController {
     }
 
     @DeleteMapping("/{profissionalId}/{servicoId}")
-    public ResponseEntity<Void> remover(
+    public ResponseEntity<Void> inativar(
             @PathVariable Integer profissionalId,
             @PathVariable Integer servicoId) {
         CatalogoId id = new CatalogoId(profissionalId, servicoId);
-        service.remover(id);
+        service.inativar(id);
         return ResponseEntity.noContent().build();
     }
 

@@ -112,13 +112,14 @@
                         <span>Cadastros</span>
                     </a>
                 </li> -->
-                <!-- <li class="sidebar-item">
-                    <a class="sidebar-link" href="">
+                <li class="sidebar-item">
+                    <a class="sidebar-link" th:href="@{/relatorios}"
+                        th:classappend="${activePage=='relatorios'} ? ' active' : ''">
                         <span class="material-icons">bar_chart</span>
                         <span>Relatórios</span>
                     </a>
                 </li>
-                <li class="sidebar-item">
+                <!-- <li class="sidebar-item">
                     <a class="sidebar-link" href="">
                         <span class="material-icons">settings</span>
                         <span>Configurações</span>
