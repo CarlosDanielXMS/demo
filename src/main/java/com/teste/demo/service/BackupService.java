@@ -36,4 +36,16 @@ public class BackupService {
 
         return filePath;
     }
+
+    public String executarRestore(String backupFilePath) {
+        String dbName = "ProjetoInter4Sem";
+
+        String sql = "ALTER DATABASE [" + dbName + "] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; " +
+                "RESTORE DATABASE [" + dbName + "] FROM DISK = '" + backupFilePath + "' WITH REPLACE; " +
+                "ALTER DATABASE [" + dbName + "] SET MULTI_USER;";
+
+        jdbcTemplate.execute(sql);
+
+        return "Restauração do banco de dados concluída a partir do arquivo: " + backupFilePath;
+    }
 }

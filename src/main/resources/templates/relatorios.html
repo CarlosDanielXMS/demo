@@ -16,12 +16,19 @@
 <section layout:fragment="content">
 
   <div class="module-header">
-    <h2>Relatórios &amp; Dashboards</h2>
+  <h2>Relatórios &amp; Dashboards</h2>
+  <div class="module-header-actions">
     <button id="backup-btn" type="button" class="btn btn-outline">
       <span class="material-icons">backup</span>
       <span>Backup do Banco</span>
     </button>
+
+    <button id="restore-btn" type="button" class="btn btn-outline btn-danger">
+      <span class="material-icons">settings_backup_restore</span>
+      <span>Restaurar Backup</span>
+    </button>
   </div>
+</div>
 
   <section class="reports-section">
     <h3>Dashboards do Power BI</h3>
@@ -54,7 +61,7 @@
 
       <article class="report-card"
                data-report-title="Clientes &amp; Fidelização"
-               data-report-url="https://app.powerbi.com/view?r=RELATORIO_CLIENTES">
+               data-report-url="https://docs.google.com/spreadsheets/d/1768oGV1PPuDWi7zKslRDvEeD5rS7RT9h/edit?usp=drive_link&ouid=108288076043854787328&rtpof=true&sd=true">
         <header class="report-card-header">
           <div class="report-icon">
             <span class="material-icons">people</span>
@@ -148,6 +155,7 @@
       const { Api } = window.App || {};
 
       const backupBtn   = document.getElementById('backup-btn');
+      const restoreBtn = document.getElementById('restore-btn');
       const reportCards = document.querySelectorAll('.report-card');
       const viewer      = document.getElementById('report-viewer');
       const viewerTitle = document.getElementById('report-viewer-title');
@@ -185,6 +193,52 @@
           } finally {
             backupBtn.disabled = false;
             backupBtn.classList.remove('is-loading');
+          }
+        });
+      }
+      if (restoreBtn) {
+        restoreBtn.addEventListener('click', async () => {
+          const confirmacao = confirm(
+            'ATENÇÃO: Restaurar um backup vai sobrescrever o banco de dados atual.\n\n' +
+            'Essa operação deve ser feita com muito cuidado. Deseja continuar?'
+          );
+          if (!confirmacao) return;
+
+          const filePath = prompt(
+            'Informe o caminho COMPLETO do arquivo .bak que será utilizado na restauração:\n' +
+            '(Ex.: C:\\\\Program Files\\\\Microsoft SQL Server\\\\MSSQL15.SQLEXPRESS\\\\MSSQL\\\\Backup\\\\ProjetoInter4Sem_20250101_120000.bak)'
+          );
+
+          if (!filePath || !filePath.trim()) {
+            alert('Caminho do arquivo de backup não informado.');
+            return;
+          }
+
+          try {
+            restoreBtn.disabled = true;
+            restoreBtn.classList.add('is-loading');
+
+            if (Api && Api.Backup && typeof Api.Backup.restore === 'function') {
+              const resp = await Api.Backup.restore(filePath.trim());
+              const msg  = resp?.message || 'Restauração concluída.';
+              alert(msg);
+            } else {
+              const resp = await fetch(apiBase + '/backup/restore', jsonPost({ filePath: filePath.trim() }));
+
+              if (!resp.ok) {
+                throw new Error('Erro HTTP ' + resp.status);
+              }
+
+              const data = await resp.json().catch(() => null);
+              const msg  = data?.message || 'Restauração concluída.';
+              alert(msg);
+            }
+          } catch (err) {
+            console.error('Erro ao restaurar backup:', err);
+            alert('Não foi possível executar a restauração. Verifique o servidor e os logs.');
+          } finally {
+            restoreBtn.disabled = false;
+            restoreBtn.classList.remove('is-loading');
           }
         });
       }
